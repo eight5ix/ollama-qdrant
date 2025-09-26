@@ -1,0 +1,36 @@
+version: "3.8"
+services:
+  ollama:
+    image: ollama/ollama:latest   # works on amd64/arm64
+    container_name: ollama
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama:/root/.ollama
+    environment:
+      - OLLAMA_KEEP_ALIVE=24h
+    # If you have an NVIDIA GPU:
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - capabilities: [gpu]
+    #           driver: nvidia
+
+  qdrant:
+    image: qdrant/qdrant:latest    # arm64-friendly too
+    container_name: qdrant
+    restart: unless-stopped
+    ports:
+      - "6333:6333"  # REST
+      - "6334:6334"  # gRPC
+    volumes:
+      - training_data:/home/tmun/Documents/ollama/data
+    environment:
+      # Set an API key for basic protection (optional but recommended)
+      - QDRANT__SERVICE__API_KEY=changeme-please
+
+volumes:
+  ollama:
+  training_data:
